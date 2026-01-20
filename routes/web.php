@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
+use Livewire\Volt\Volt;
 // Public booking form
 Route::view('/', 'components.reservas.public-form')->name('home');
 Route::view('/reservar', 'components.reservas.public-form')->name('reservas.public');
