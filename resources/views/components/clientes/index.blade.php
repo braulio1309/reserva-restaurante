@@ -18,7 +18,7 @@ new #[Layout('layouts.app')] #[Title('Admin - Gestión de Clientes')] class exte
     public $nombre = '';
     public $email = '';
     public $telefono = '';
-    public $tipo = 'new';
+    public $tipo = 'nuevo';
     public $notas = '';
     
     public function updatingSearch()
@@ -72,7 +72,7 @@ new #[Layout('layouts.app')] #[Title('Admin - Gestión de Clientes')] class exte
         $this->nombre = '';
         $this->email = '';
         $this->telefono = '';
-        $this->tipo = 'new';
+        $this->tipo = 'nuevo';
         $this->notas = '';
     }
     
@@ -94,7 +94,7 @@ new #[Layout('layouts.app')] #[Title('Admin - Gestión de Clientes')] class exte
             'nombre' => 'required|min:3',
             'telefono' => 'required',
             'email' => 'nullable|email',
-            'tipo' => 'required|in:new,vip,regular',
+            'tipo' => 'required|in:nuevo,vip,regular',
         ]);
         
         $data = [
@@ -192,7 +192,7 @@ new #[Layout('layouts.app')] #[Title('Admin - Gestión de Clientes')] class exte
 
         .tag { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; display: inline-block; }
         .tag.vip { background-color: var(--tag-vip-bg); color: var(--tag-vip-text); }
-        .tag.new { background-color: var(--tag-new-bg); color: var(--tag-new-text); }
+        .tag.nuevo { background-color: var(--tag-new-bg); color: var(--tag-new-text); }
         .tag.regular { background-color: var(--tag-regular-bg); color: var(--tag-regular-text); }
 
         .action-icon { background: none; border: none; cursor: pointer; color: #94a3b8; font-size: 16px; margin-right: 8px; transition: 0.2s; }
@@ -255,7 +255,7 @@ new #[Layout('layouts.app')] #[Title('Admin - Gestión de Clientes')] class exte
                 <option value="">Todos los Tipos</option>
                 <option value="vip">💎 VIP</option>
                 <option value="regular">🔄 Regular</option>
-                <option value="new">🆕 Nuevo</option>
+                <option value="nuevo">🆕 Nuevo</option>
             </select>
             <select wire:model.live="orderBy" class="filter-select">
                 <option value="created_at">Más Recientes</option>
@@ -343,7 +343,7 @@ new #[Layout('layouts.app')] #[Title('Admin - Gestión de Clientes')] class exte
                 <div class="modal-form-group">
                     <label class="modal-label">Etiqueta</label>
                     <select wire:model="tipo" class="modal-select">
-                        <option value="new">Nuevo</option>
+                        <option value="nuevo">Nuevo</option>
                         <option value="vip">VIP</option>
                         <option value="regular">Regular</option>
                     </select>

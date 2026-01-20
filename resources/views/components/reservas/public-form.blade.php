@@ -41,7 +41,7 @@ new #[Title('Reserva tu Mesa - Restaurante Sabor y Estilo')] class extends Compo
             [
                 'nombre' => $this->nombre_cliente,
                 'telefono' => $this->telefono_cliente,
-                'tipo' => 'new',
+                'tipo' => 'nuevo',
             ]
         );
         
