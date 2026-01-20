@@ -25,7 +25,7 @@ new #[Title('Reserva tu Mesa - Restaurante Sabor y Estilo')] class extends Compo
     {
         $validated = $this->validate([
             'nombre_cliente' => 'required|min:3',
-            'email_cliente' => 'required|email',
+            'email_cliente' => 'nullable|email',
             'telefono_cliente' => 'required',
             'fecha' => 'required|date|after_or_equal:today',
             'hora' => 'required',
@@ -36,17 +36,20 @@ new #[Title('Reserva tu Mesa - Restaurante Sabor y Estilo')] class extends Compo
         $validated['estado'] = 'pendiente';
         
         // Check if cliente exists, if not create
-        $cliente = Cliente::firstOrCreate(
-            ['email' => $this->email_cliente],
-            [
-                'nombre' => $this->nombre_cliente,
-                'telefono' => $this->telefono_cliente,
-                'tipo' => 'nuevo',
-            ]
-        );
+        if ($this->email_cliente) {
+            $cliente = Cliente::firstOrCreate(
+                ['email' => $this->email_cliente],
+                [
+                    'nombre' => $this->nombre_cliente,
+                    'telefono' => $this->telefono_cliente,
+                    'tipo' => 'nuevo',
+                ]
+            );
+            $validated['cliente_id'] = $cliente->id;
+        }
         
         // Create reservation
-        Reserva::create(array_merge($validated, ['cliente_id' => $cliente->id]));
+        Reserva::create($validated);
         
         $this->successMessage = '¡Tu reserva ha sido registrada exitosamente! Te contactaremos pronto para confirmar.';
         $this->resetForm();
@@ -250,8 +253,8 @@ new #[Title('Reserva tu Mesa - Restaurante Sabor y Estilo')] class extends Compo
             </div>
 
             <div class="form-group">
-                <label for="email" class="form-label">Correo Electrónico *</label>
-                <input type="email" wire:model="email_cliente" class="form-input" placeholder="ejemplo@correo.com" required>
+                <label for="email" class="form-label">Correo Electrónico</label>
+                <input type="email" wire:model="email_cliente" class="form-input" placeholder="ejemplo@correo.com">
                 @error('email_cliente') <div class="error-message">{{ $message }}</div> @enderror
             </div>
 
@@ -288,9 +291,9 @@ new #[Title('Reserva tu Mesa - Restaurante Sabor y Estilo')] class extends Compo
                     <option value="8">8 Personas</option>
                     <option value="9">9 Personas</option>
                     <option value="10">10 Personas</option>
-                    <option value="more">+10 (Contactar al restaurante)</option>
                 </select>
                 @error('num_personas') <div class="error-message">{{ $message }}</div> @enderror
+                <small style="color: #64748b; font-size: 12px;">Para grupos de más de 10 personas, por favor contáctenos directamente.</small>
             </div>
 
             <div class="form-group">
