@@ -15,6 +15,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Create admin users
+        $this->call([
+            AdminUserSeeder::class,
+        ]);
+
         // Create sample clients
         \App\Models\Cliente::create([
             'nombre' => 'Juan Pérez',
