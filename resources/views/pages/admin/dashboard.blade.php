@@ -128,6 +128,12 @@
             <a href="#" class="menu-item">
                 <i>⚙️</i> <span>Configuración</span>
             </a>
+            <form method="POST" action="{{ route('logout') }}" style="margin-top: auto;">
+                @csrf
+                <button type="submit" class="menu-item" style="width: 100%; background: none; border: none; cursor: pointer;">
+                    <i>🚪</i> <span>Cerrar Sesión</span>
+                </button>
+            </form>
         </ul>
     </nav>
 

@@ -2,17 +2,27 @@
 
 use Illuminate\Support\Facades\Route;
 use Livewire\Volt\Volt;
-// Public booking form
-Route::view('/', 'components.reservas.public-form')->name('home');
-Route::view('/reservar', 'components.reservas.public-form')->name('reservas.public');
+use App\Http\Controllers\AuthController;
 
-// Admin routes
-Route::prefix('admin')->name('admin.')->group(function () {
-    Route::view('/dashboard', 'pages.admin.dashboard')->name('dashboard');
+// Public booking form - using Livewire Volt component
+Volt::route('/', 'reservas.public-form')->name('home');
+Volt::route('/reservar', 'reservas.public-form')->name('reservas.public');
+
+// Authentication routes
+Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login')->middleware('guest');
+Route::post('/login', [AuthController::class, 'login'])->middleware('guest');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');
+
+// Protected Admin routes
+Route::middleware('auth')->group(function () {
+    // Admin routes
+    Route::prefix('admin')->name('admin.')->group(function () {
+        Volt::route('/dashboard', 'admin.dashboard')->name('dashboard');
+    });
+
+    // Clientes routes
+    Volt::route('/clientes', 'clientes.index')->name('clientes.index');
+
+    // Disponibilidad routes
+    Volt::route('/disponibilidad', 'disponibilidad.index')->name('disponibilidad.index');
 });
-
-// Clientes routes
-Route::view('/clientes', 'pages.clientes.index')->name('clientes.index');
-
-// Disponibilidad routes
-Route::view('/disponibilidad', 'pages.disponibilidad.index')->name('disponibilidad.index');
