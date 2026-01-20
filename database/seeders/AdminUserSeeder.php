@@ -10,6 +10,9 @@ class AdminUserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     * 
+     * Note: These passwords are for testing only.
+     * In production, use strong passwords and consider using environment variables.
      */
     public function run(): void
     {
@@ -17,7 +20,7 @@ class AdminUserSeeder extends Seeder
         User::create([
             'name' => 'Administrador',
             'email' => 'admin@saborestilo.com',
-            'password' => Hash::make('admin123'),
+            'password' => Hash::make('admin123'), // Change in production
             'email_verified_at' => now(),
         ]);
 
@@ -25,7 +28,7 @@ class AdminUserSeeder extends Seeder
         User::create([
             'name' => 'Usuario Demo',
             'email' => 'demo@saborestilo.com',
-            'password' => Hash::make('demo123'),
+            'password' => Hash::make('demo123'), // Change in production
             'email_verified_at' => now(),
         ]);
     }
