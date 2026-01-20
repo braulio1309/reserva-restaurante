@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Mapa de Mesas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- ESTILOS GENERALES (Iguales al anterior) --- */
+        :root {
+            --primary-color: #e65100;
+            --sidebar-bg: #1e293b;
+            --sidebar-text: #94a3b8;
+            --bg-body: #f1f5f9;
+            --white: #ffffff;
+            --text-dark: #334155;
+            --border-color: #e2e8f0;
+            --status-free: #10b981;
+            --status-busy: #f43f5e;
+            --status-reserved: #f59e0b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
+        body { background-color: var(--bg-body); color: var(--text-dark); display: flex; min-height: 100vh; }
+
+        /* Sidebar */
+        .sidebar { width: 260px; background-color: var(--sidebar-bg); color: var(--white); display: flex; flex-direction: column; position: fixed; height: 100%; left: 0; top: 0; z-index: 10; }
+        .brand { padding: 25px; font-size: 20px; font-weight: 600; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .menu { list-style: none; padding: 20px 0; }
+        .menu-item { padding: 15px 25px; color: var(--sidebar-text); cursor: pointer; transition: 0.3s; display: flex; align-items: center; gap: 10px; text-decoration: none; }
+        .menu-item:hover, .menu-item.active { background-color: rgba(255,255,255,0.05); color: var(--white); border-left: 4px solid var(--primary-color); }
+
+        /* Main Content */
+        .main-content { margin-left: 260px; flex: 1; padding: 30px; position: relative; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .header h1 { font-size: 24px; font-weight: 600; }
+        
+        .btn-add {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: 0.3s;
+        }
+        .btn-add:hover { background-color: #bf360c; }
+
+        /* Toolbar */
+        .toolbar { background: var(--white); padding: 15px 20px; border-radius: 8px; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.03); flex-wrap: wrap; gap: 15px; }
+        .filters { display: flex; gap: 10px; }
+        .filter-btn { background: none; border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 20px; cursor: pointer; color: var(--text-dark); font-size: 14px; transition: 0.2s; }
+        .filter-btn.active, .filter-btn:hover { background-color: var(--sidebar-bg); color: var(--white); border-color: var(--sidebar-bg); }
+        .legend { display: flex; gap: 15px; font-size: 13px; color: #64748b; }
+        .legend-item { display: flex; align-items: center; gap: 5px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot.free { background-color: var(--status-free); }
+        .dot.busy { background-color: var(--status-busy); }
+        .dot.reserved { background-color: var(--status-reserved); }
+
+        /* Grid */
+        .tables-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+
+        /* Cards */
+        .table-card { background: var(--white); border-radius: 12px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.03); border: 1px solid var(--border-color); position: relative; transition: transform 0.2s, box-shadow 0.2s; }
+        .table-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
+        .table-card.free { border-top: 5px solid var(--status-free); }
+        .table-card.busy { border-top: 5px solid var(--status-busy); }
+        .table-card.reserved { border-top: 5px solid var(--status-reserved); }
+        
+        .card-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .table-name { font-size: 18px; font-weight: 600; }
+        .table-area { font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+        .capacity { background-color: #f1f5f9; padding: 4px 8px; border-radius: 4px; font-size: 12px; display: flex; align-items: center; gap: 4px; }
+        .status-text { font-size: 14px; font-weight: 500; margin-bottom: 20px; }
+        .free .status-text { color: var(--status-free); }
+        .busy .status-text { color: var(--status-busy); }
+        .reserved .status-text { color: var(--status-reserved); }
+        
+        .reservation-info { background-color: #f8fafc; padding: 10px; border-radius: 6px; font-size: 12px; color: #475569; margin-bottom: 15px; }
+        
+        .card-actions { display: flex; gap: 10px; }
+        .btn-action { flex: 1; padding: 8px; border: 1px solid var(--border-color); background: white; border-radius: 4px; cursor: pointer; font-size: 12px; transition: 0.2s; }
+        .btn-action:hover { background-color: #f1f5f9; }
+
+        /* --- ESTILOS DEL MODAL --- */
+        .modal {
+            display: none; /* Oculto por defecto */
+            position: fixed; 
+            z-index: 1000; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            background-color: rgba(0,0,0,0.5); /* Fondo negro semi-transparente */
+            backdrop-filter: blur(4px); /* Efecto borroso */
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s;
+        }
+
+        .modal-content {
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            position: relative;
+            animation: slideUp 0.3s;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #94a3b8;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .close-modal:hover { color: var(--primary-color); }
+
+        .modal h2 { margin-bottom: 20px; color: var(--text-dark); }
+
+        /* Estilos del formulario del modal */
+        .modal-form-group { margin-bottom: 15px; }
+        .modal-label { display: block; margin-bottom: 5px; font-size: 14px; font-weight: 500; }
+        .modal-input, .modal-select { 
+            width: 100%; padding: 10px; border: 1px solid var(--border-color); 
+            border-radius: 6px; font-size: 14px; outline: none; 
+        }
+        .modal-input:focus, .modal-select:focus { border-color: var(--primary-color); }
+        
+        .btn-save {
+            width: 100%; padding: 12px; background-color: var(--primary-color); 
+            color: white; border: none; border-radius: 6px; font-weight: 600; 
+            cursor: pointer; margin-top: 10px;
+        }
+        .btn-save:hover { background-color: #bf360c; }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        @media (max-width: 768px) {
+            .sidebar { width: 70px; }
+            .sidebar .brand span, .menu-item span { display: none; }
+            .main-content { margin-left: 70px; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="sidebar">
+        <div class="brand"><i>🍽️</i> <span>SaborAdmin</span></div>
+        <ul class="menu">
+            <a href="admin.html" class="menu-item"><i>📊</i> <span>Dashboard</span></a>
+            <a href="#" class="menu-item"><i>📅</i> <span>Reservas</span></a>
+            <a href="#" class="menu-item active"><i>🪑</i> <span>Mesas</span></a>
+            <a href="#" class="menu-item"><i>👥</i> <span>Clientes</span></a>
+            <a href="#" class="menu-item"><i>⚙️</i> <span>Configuración</span></a>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <header class="header">
+            <div>
+                <h1>Gestión de Mesas</h1>
+                <p style="color: #64748b; font-size: 14px;">Mapa en tiempo real</p>
+            </div>
+            <button class="btn-add" id="openModalBtn">
+                <span>+</span> Agregar Mesa
+            </button>
+        </header>
+
+        <div class="toolbar">
+            <div class="filters">
+                <button class="filter-btn active">Todas</button>
+                <button class="filter-btn">Salón Principal</button>
+                <button class="filter-btn">Terraza</button>
+            </div>
+            <div class="legend">
+                <div class="legend-item"><span class="dot free"></span> Disponible</div>
+                <div class="legend-item"><span class="dot reserved"></span> Reservada</div>
+                <div class="legend-item"><span class="dot busy"></span> Ocupada</div>
+            </div>
+        </div>
+
+        <div class="tables-grid" id="tablesGrid">
+            <div class="table-card busy">
+                <div class="card-header">
+                    <div><div class="table-name">Mesa 01</div><div class="table-area">Salón Principal</div></div>
+                    <div class="capacity">👤 4</div>
+                </div>
+                <div class="status-text">🔴 Ocupada</div>
+                <div class="reservation-info"><strong>Cliente:</strong> Juan Pérez<br><strong>Llegada:</strong> 14:15 PM</div>
+                <div class="card-actions">
+                    <button class="btn-action">Ver Cuenta</button>
+                    <button class="btn-action">Liberar</button>
+                </div>
+            </div>
+             <div class="table-card free">
+                <div class="card-header">
+                    <div><div class="table-name">Mesa 02</div><div class="table-area">Salón Principal</div></div>
+                    <div class="capacity">👤 2</div>
+                </div>
+                <div class="status-text">🟢 Disponible</div>
+                <div style="height: 54px; display:flex; align-items:center; color:#94a3b8; font-size:12px;">Lista para asignar</div>
+                <div class="card-actions">
+                    <button class="btn-action">Ocupar</button>
+                    <button class="btn-action">Reservar</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="addTableModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Agregar Nueva Mesa</h2>
+            <form id="addTableForm">
+                <div class="modal-form-group">
+                    <label for="tableName" class="modal-label">Nombre de la Mesa</label>
+                    <input type="text" id="tableName" class="modal-input" placeholder="Ej. Mesa 15 o Terraza 4" required>
+                </div>
+
+                <div class="modal-form-group">
+                    <label for="tableZone" class="modal-label">Zona</label>
+                    <select id="tableZone" class="modal-select">
+                        <option value="Salón Principal">Salón Principal</option>
+                        <option value="Terraza">Terraza</option>
+                        <option value="Bar">Bar</option>
+                        <option value="Privado">Privado</option>
+                    </select>
+                </div>
+
+                <div class="modal-form-group">
+                    <label for="tableCapacity" class="modal-label">Capacidad (Personas)</label>
+                    <input type="number" id="tableCapacity" class="modal-input" min="1" max="20" value="2" required>
+                </div>
+
+                <button type="submit" class="btn-save">Guardar Mesa</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Obtener elementos
+        const modal = document.getElementById("addTableModal");
+        const btnOpen = document.getElementById("openModalBtn");
+        const btnClose = document.getElementsByClassName("close-modal")[0];
+        const form = document.getElementById("addTableForm");
+        const grid = document.getElementById("tablesGrid");
+
+        // Abrir Modal
+        btnOpen.onclick = function() {
+            modal.style.display = "flex";
+            document.getElementById("tableName").focus(); // Poner foco en el primer input
+        }
+
+        // Cerrar Modal con la X
+        btnClose.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // Cerrar Modal clicando fuera
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // Función para añadir la mesa al enviar el formulario
+        form.onsubmit = function(event) {
+            event.preventDefault(); // Evitar recarga de página
+
+            // Capturar valores
+            const name = document.getElementById("tableName").value;
+            const zone = document.getElementById("tableZone").value;
+            const capacity = document.getElementById("tableCapacity").value;
+
+            // Crear el HTML de la nueva tarjeta (Por defecto se crea como "Disponible/Free")
+            const newCardHTML = `
+                <div class="table-card free">
+                    <div class="card-header">
+                        <div>
+                            <div class="table-name">${name}</div>
+                            <div class="table-area">${zone}</div>
+                        </div>
+                        <div class="capacity">👤 ${capacity}</div>
+                    </div>
+                    <div class="status-text">🟢 Disponible</div>
+                    
+                    <div style="height: 54px; display:flex; align-items:center; color:#94a3b8; font-size:12px;">
+                        Lista para asignar
+                    </div>
+
+                    <div class="card-actions">
+                        <button class="btn-action">Ocupar</button>
+                        <button class="btn-action">Reservar</button>
+                    </div>
+                </div>
+            `;
+
+            // Insertar la tarjeta en el grid
+            // insertAdjacentHTML es mejor para no romper los event listeners existentes de otras tarjetas
+            grid.insertAdjacentHTML('beforeend', newCardHTML);
+
+            // Resetear form y cerrar modal
+            form.reset();
+            modal.style.display = "none";
+            
+            // Opcional: Alerta simple
+            // alert("Mesa creada exitosamente");
+        }
+    </script>
+
+</body>
+</html>

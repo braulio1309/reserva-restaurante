@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reserva tu Mesa - Restaurante Sabor y Estilo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Reset básico y variables de color */
+        :root {
+            --primary-color: #e65100; /* Un color naranja quemado apetitoso */
+            --secondary-color: #263238; /* Gris oscuro para textos */
+            --bg-light: #f5f7fa;
+            --white: #ffffff;
+            --border-color: #e0e0e0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-light);
+            color: var(--secondary-color);
+            line-height: 1.6;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* Contenedor principal del formulario */
+        .booking-container {
+            background-color: var(--white);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px; /* Ancho máximo para que no se vea demasiado ancho en PC */
+        }
+
+        /* Estilos del Logo Genérico */
+        .logo-container {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .logo-icon {
+            font-size: 40px;
+            color: var(--primary-color);
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .logo-text {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--secondary-color);
+        }
+
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 500;
+            color: #546e7a;
+        }
+
+        /* Estilos de los campos del formulario */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-input, 
+        .form-textarea, 
+        .form-select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 15px;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        /* Efecto al hacer foco en los campos */
+        .form-input:focus, 
+        .form-textarea:focus, 
+        .form-select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(230, 81, 0, 0.1);
+        }
+
+        .form-textarea {
+            resize: vertical; /* Permite redimensionar solo verticalmente */
+            height: 80px;
+        }
+
+        /* Agrupación de fecha y hora para pantallas grandes */
+        .dateTime-group {
+            display: flex;
+            gap: 15px;
+        }
+        .dateTime-group .form-group {
+            flex: 1;
+        }
+
+        /* Estilos del botón */
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: var(--white);
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: #bf360c; /* Un tono más oscuro al pasar el mouse */
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98); /* Pequeño efecto de clic */
+        }
+
+        /* Media query para móviles pequeños */
+        @media (max-width: 480px) {
+            .booking-container {
+                padding: 25px;
+            }
+            .dateTime-group {
+                flex-direction: column;
+                gap: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="booking-container">
+        <div class="logo-container">
+            <span class="logo-icon">🍽️🍷</span>
+            <span class="logo-text">Sabor & Estilo</span>
+        </div>
+
+        <h2>Haz tu Reservación</h2>
+
+        <form action="#" method="post">
+            
+            <div class="form-group">
+                <label for="fullname" class="form-label">Nombre Completo *</label>
+                <input type="text" id="fullname" name="fullname" class="form-input" placeholder="Ej. Juan Pérez" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email" class="form-label">Correo Electrónico *</label>
+                <input type="email" id="email" name="email" class="form-input" placeholder="ejemplo@correo.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone" class="form-label">Teléfono de Contacto *</label>
+                <input type="tel" id="phone" name="phone" class="form-input" placeholder="Ej. +52 555 123 4567" required>
+            </div>
+
+            <div class="dateTime-group">
+                <div class="form-group">
+                    <label for="date" class="form-label">Fecha *</label>
+                    <input type="date" id="date" name="date" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="time" class="form-label">Hora *</label>
+                    <input type="time" id="time" name="time" class="form-input" min="12:00" max="23:00" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="guests" class="form-label">Número de Personas *</label>
+                <select id="guests" name="guests" class="form-select" required>
+                    <option value="" disabled selected>Selecciona cantidad</option>
+                    <option value="1">1 Persona</option>
+                    <option value="2">2 Personas</option>
+                    <option value="3">3 Personas</option>
+                    <option value="4">4 Personas</option>
+                    <option value="5">5 Personas</option>
+                    <option value="6">6 Personas</option>
+                    <option value="more">+6 (Contactar al restaurante)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="requests" class="form-label">Peticiones Especiales / Alergias</label>
+                <textarea id="requests" name="requests" class="form-textarea" placeholder="¿Alguna alergia o celebración especial?"></textarea>
+            </div>
+
+            <button type="submit" class="btn-submit">Confirmar Reserva</button>
+
+        </form>
+    </div>
+
+</body>
+</html>
